@@ -1,0 +1,13 @@
+@import "base-styles/variables";
+
+.nav-pills .nav-item {
+  margin-right: 15px;
+
+  &:last-child {
+    margin-right: 0;
+  }
+  
+  .nav-link {
+    border: $nav-link-border-width solid $component-active-bg;    
+  }
+}
