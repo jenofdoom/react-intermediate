@@ -2,7 +2,6 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import { BrowserRouter as Router, Route } from 'react-router-dom';
 
-// import 'styles.css';
 import 'index.scss';
 import Homepage from 'components/homepage/homepage';
 import About from 'components/about/about';

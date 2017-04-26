@@ -11,19 +11,12 @@ class Hole extends Component {
       frogActive: false
     };
 
-    this.activateFrog = this.activateFrog.bind(this);
-    this.deactivateFrog = this.deactivateFrog.bind(this);
+    this.toggleFrog = this.toggleFrog.bind(this);
   }
 
-  activateFrog () {
+  toggleFrog () {
     this.setState({
-      frogActive: true
-    });
-  }
-
-  deactivateFrog () {
-    this.setState({
-      frogActive: false
+      frogActive: !this.state.frogActive
     });
   }
 
@@ -36,8 +29,7 @@ class Hole extends Component {
 
     return (
       <div className="hole-container">
-        <button onClick={this.activateFrog}>ACTIVATE</button>
-        <button onClick={this.deactivateFrog}>DEACTIVATE</button>
+        <button onClick={this.toggleFrog}>ACTIVATE</button>
         <div className="hole">
           <div className={frogClass}></div>
           <img src={holeMask} className='hole-mask' />

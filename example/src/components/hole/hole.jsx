@@ -1,45 +1,32 @@
-import React, { Component } from 'react';
+import React, { Component, PropTypes } from 'react';
+import { connect } from 'react-redux';
 
 import holeMask from 'assets/img/hole-mask.svg';
+import { clickFrogAction } from 'actions/actions';
 import './hole.scss';
 
 class Hole extends Component {
   constructor (props) {
     super(props);
 
-    this.state = {
-      frogActive: false
-    };
-
-    this.activateFrog = this.activateFrog.bind(this);
-    this.deactivateFrog = this.deactivateFrog.bind(this);
+    this.frogClick = this.frogClick.bind(this);
   }
 
-  activateFrog () {
-    this.setState({
-      frogActive: true
-    });
-  }
-
-  deactivateFrog () {
-    this.setState({
-      frogActive: false
-    });
+  frogClick () {
+    this.props.dispatch(clickFrogAction(this.props.id));
   }
 
   render () {
     let frogClass = 'frog';
 
-    if (this.state.frogActive) {
+    if (this.props.active) {
       frogClass = 'frog up';
     }
 
     return (
       <div className="hole-container">
-        <button onClick={this.activateFrog}>ACTIVATE</button>
-        <button onClick={this.deactivateFrog}>DEACTIVATE</button>
         <div className="hole">
-          <div className={frogClass}></div>
+          <div className={frogClass} onClick={this.frogClick}></div>
           <img src={holeMask} className='hole-mask' />
         </div>
       </div>
@@ -47,4 +34,14 @@ class Hole extends Component {
   }
 }
 
-export default Hole;
+Hole.propTypes = {
+  active: PropTypes.bool.isRequired,
+  dispatch: PropTypes.func.isRequired,
+  id: PropTypes.number.isRequired
+};
+
+const mapStateToProps = () => {
+  return {};
+};
+
+export default connect(mapStateToProps)(Hole);

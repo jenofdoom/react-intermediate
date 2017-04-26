@@ -6,7 +6,7 @@
 
 .hole {
   width: 200px;
-  height: 200px;
+  height: 100px;
   margin: 20px 20px 50px;
   position: relative;
   overflow: hidden;
@@ -28,6 +28,7 @@
     position: absolute;
     bottom: 0;
     left: 0;
+    pointer-events: none;
   }
 }
 

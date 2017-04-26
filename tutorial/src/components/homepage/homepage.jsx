@@ -9,7 +9,7 @@ class Homepage extends Component {
   render () {
     let holes = [];
 
-    for (let i = 1; i <= 5; i++) {
+    for (let i = 0; i < 5; i++) {
       holes.push(<Hole key={'hole-' + i} id={i} />);
     }
 
