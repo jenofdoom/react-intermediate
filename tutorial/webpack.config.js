@@ -5,7 +5,7 @@ const HtmlWebpackPlugin = require('html-webpack-plugin');
 const ExtractTextPlugin = require('extract-text-webpack-plugin');
 
 const config = {
-  entry: ['babel-polyfill', './src/index.jsx'],
+  entry: ['babel-polyfill', 'whatwg-fetch', './src/index.jsx'],
 
   output: {
     path: path.resolve(__dirname, 'dist'),

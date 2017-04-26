@@ -561,7 +561,189 @@ Try:
 
 ## Fetch
 
+React has no tooling of its own for AJAX, so you need to either use the browsers
+native `XMLHttpRequest`, another library, or (what I'd recommend) the modern replacement for
+`XMLHttpRequest`, which is called
+[fetch](https://developer.mozilla.org/en/docs/Web/API/Fetch_API). Unfortunately
+IE does not support `fetch` (Edge does) so we need a polyfill if we want to
+support IE. The popular polyfill for this is [whatwg-fetch](https://github.com/github/fetch), but you'll also need a polyfill for promises too - [babel-polyfill](https://babeljs.io/docs/usage/polyfill/) can take care of that requirement (both of these are already in place for the webpack build for this project).
+
+A fetch chain looks something like:
+
+```
+fetch('http://example.com/api/')
+  .then(checkStatus())
+  .then(response => response.json())
+  .then(json => {
+    // do something with json here - dispatch an action?
+  })
+  .catch(error => {
+    // do something about your error here
+  });
+```
+
+where `checkStatus` is a function that you'd always inset into fetch calls to catch error status codes where a response did get returned:
+
+```
+export function checkStatus (response) {
+  if (response.status >= 200 && response.status < 300) {
+    return response
+  } else {
+    var error = new Error(response.statusText)
+    error.response = response
+    throw error
+  }
+}
+```
+
+You can put fetch chains inside your redux thunk actions in order to trigger
+dispatches once the promise is resolved.
+
 ## Testing with Jest
+
+Although there are man test frameworks that you could consider integrating with
+your React project, broadly speaking [Jest](https://facebook.github.io/jest/) is
+the most popular and well-integrated. We also use
+[enzyme](http://airbnb.io/enzyme/docs/guides/jest.html) to make assertions about
+our components. We'll add some tests to one of our components to show how it
+works.
+
+### Setting up Jest
+
+In a terminal in the `react-intermediate/tutorial` folder:
+
+```
+npm install --save-dev jest babel-jest enzyme react-addons-test-utils react-test-renderer
+```
+
+In `package.json` alter the scripts object so that the `test` command reads as
+follows (and add a line for `coverage` too):
+
+```
+"scripts": {
+  "test": "./node_modules/.bin/jest",
+  "coverage": "./node_modules/.bin/jest --coverage",
+```
+
+and also in `package.json` add a new key for the [Jest
+configuration](https://facebook.github.io/jest/docs/configuration.html#content):
+
+```
+"jest": {
+  "verbose": true,
+  "moduleDirectories": [
+    "src",
+    "node_modules"
+  ],
+  "moduleNameMapper": {
+    "^.+\\.(jpg|jpeg|png|gif|eot|otf|webp|svg|ttf|woff|woff2|mp4|webm|wav|mp3|m4a|aac|oga)$": "<rootDir>/jest-mock-files.js",
+    "^.+\\.(scss|css)$": "<rootDir>/jest-mock-styles.js"
+  },
+  "collectCoverageFrom": [
+    "src/**/*.{js,jsx}",
+    "!node_modules/**",
+    "!src/index.jsx",
+    "!src/store.jsx"
+  ]
+}
+```
+
+Make two files in the root of the `tutorial` folder:
+
+`jest-mock-files.js`:
+
+```
+module.exports = 'test-file-stub';
+```
+
+`jest-mock-styles.js`:
+
+```
+module.exports = {};
+```
+
+Add a line to the `.gitignore` file:
+
+```
+coverage
+```
+
+Modify `.babelrc` (alternatively we could get
+[Webpack](https://facebook.github.io/jest/docs/webpack.html) to run the tests
+for us):
+
+```
+{
+  "presets": [
+    "react",
+    [
+      "env",
+      {
+        "targets": {
+          "uglify": true
+        },
+        "modules": false
+      }
+    ]
+  ],
+  "env": {
+    "test": {
+      "plugins": ["transform-es2015-modules-commonjs"]
+    }
+  }
+}
+```
+
+We can now run the command line arguements:
+
+```
+npm run test
+npm run coverage
+```
+
+### Writing a test
+
+First, in `example/src/components/hole/hole.jsx` change `class Hole extends Component {` to `export class Hole extends Component {`.
+
+Add a new file `example/src/components/hole/hole.test.js`:
+
+```
+import React from 'react';
+import { Hole } from 'components/hole/hole';
+import { shallow } from 'enzyme';
+
+describe('initial render of Hole', () => {
+  let hole = null;
+
+  beforeEach(() => {
+    const dispatchMock = jest.fn();
+    const props = {
+      dispatch: dispatchMock,
+      active: false,
+      id: 1
+    };
+
+    hole = shallow(
+      <Hole {...props} />
+    );
+  })
+
+  test('Frog is hidden if Hole is not active', () => {
+    expect(hole.find('.frog').hasClass('up')).toBeFalsy();
+  });
+});
+```
+
+Enzyme has serveral differnt types of rendering (shallow is what we use most
+commonly, but sometimes we might need mount). Each method has its own
+[api](http://airbnb.io/enzyme/docs/api/shallow.html#shallowwrapper-api), for
+example we use
+[hasClass](http://airbnb.io/enzyme/docs/api/ShallowWrapper/hasClass.html) above
+and then state the outcome we
+[expect](https://facebook.github.io/jest/docs/expect.html#content) using Jest's
+[toBeFalsy](https://facebook.github.io/jest/docs/expect.html#tobefalsy). We also
+use a [mock function](https://facebook.github.io/jest/docs/mock-functions.html)
+from Jest to mock the dispatch prop.
 
 ## Higher Order Components
 
@@ -570,6 +752,13 @@ A higher-order component, or
 way of having reusable bits of logic that you would use to encapsulate varied
 content - kind of like a decorator, but for components (or like Angular 1's
 concept of transclusion).
+
+It's possible to achieve code reuse through the use of subclassing, but HOC's
+are more explict when you're trying to make reusable components.
+
+[This
+article](https://medium.com/@franleplant/react-higher-order-components-in-depth-cf9032ee6c3e)
+examines HOCs in some detail.
 
 ## Making your React app production ready
 
@@ -588,3 +777,25 @@ if (process.env.NODE_ENV !== 'production') {
 ```
 
 ## A brief introduction to React Native
+
+[React Native](https://facebook.github.io/react-native/) is:
+
+* Proper native app code, not a webviews solution like Cordova
+* For both iOS and Android
+* A good developer environment - you get _much_ faster development builds compared to e.g. Cordova
+* A way of use native mobile APIs like the Camera
+
+React Native is _not_:
+
+* A magical way of making your web application into a mobile app with no effort
+* Not perfectly cross-platform 100% of the time, e.g. you need a third party component [react-native-datepicker](https://github.com/xgfe/react-native-datepicker) to abstract the date picker widget between platforms
+
+It is possible to resuse some of the application logic between a web project and
+a Native project, see [this
+article](http://jkaufman.io/react-web-native-codesharing/) for some tips. But
+you _defintely can't resuse the render methods_, and you might bump into issues
+with dependancies differing between the two, so you'd have to consider the pros
+and cons there.
+
+[NativeBase](https://nativebase.io/) can take some of the pain out of creating
+cross-platform (iOS and Android) widgets.

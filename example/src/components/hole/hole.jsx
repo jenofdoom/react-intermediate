@@ -5,7 +5,7 @@ import holeMask from 'assets/img/hole-mask.svg';
 import { clickFrogAction } from 'actions/actions';
 import './hole.scss';
 
-class Hole extends Component {
+export class Hole extends Component {
   constructor (props) {
     super(props);
 
