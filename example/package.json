@@ -5,7 +5,8 @@
   "main": "src/index.js",
   "scripts": {
     "test": "./node_modules/.bin/jest",
-    "coverage": "./node_modules/.bin/jest --coverage",
+    "test:watch": "./node_modules/.bin/jest --watch",
+    "test:coverage": "./node_modules/.bin/jest --coverage",
     "build": "rm -rf ./dist && ./node_modules/.bin/webpack -p",
     "start": "./node_modules/.bin/webpack-dev-server --hot --inline"
   },

@@ -555,6 +555,7 @@ without losing the state.
 Try:
 
 * setting up a END_GAME action that resets all the frogs to down
+* refactoring the controls component so the game timer is moved to actions
 * setting up a score counter that increments on each click
 * resetting the score to 0 on START_GAME
 * making frogs dissapear automatically if they aren't clicked after an interval
@@ -622,7 +623,8 @@ follows (and add a line for `coverage` too):
 ```
 "scripts": {
   "test": "./node_modules/.bin/jest",
-  "coverage": "./node_modules/.bin/jest --coverage",
+  "test:watch": "./node_modules/.bin/jest --watch",
+  "test:coverage": "./node_modules/.bin/jest --coverage",
 ```
 
 and also in `package.json` add a new key for the [Jest
@@ -698,7 +700,7 @@ We can now run the command line arguements:
 
 ```
 npm run test
-npm run coverage
+npm run test:coverage
 ```
 
 ### Writing a test
@@ -759,6 +761,32 @@ are more explict when you're trying to make reusable components.
 [This
 article](https://medium.com/@franleplant/react-higher-order-components-in-depth-cf9032ee6c3e)
 examines HOCs in some detail.
+
+## Sidestepping build complexity with create-react-app
+
+
+An alternative to our Webpack process is
+[create-react-app](https://github.com/facebookincubator/create-react-app). let's
+eplore how that works:
+
+```
+cd ~
+sudo npm install -g create-react-app
+
+create-react-app test-app
+cd test-app/
+npm start
+```
+
+Now let's perform an
+[eject](https://github.com/facebookincubator/create-react-app#converting-to-a-custom-setup)
+to see what create-react-app is doing under the hood - _you wouldn't normally
+perform this as it's one way until you absolutely had to_ but we're just having
+an explore.
+
+```
+npm run eject
+```
 
 ## Making your React app production ready
 
