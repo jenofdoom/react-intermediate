@@ -4,7 +4,9 @@
   "description": "Tutorial for Webpack",
   "main": "src/index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "./node_modules/.bin/jest",
+    "test:watch": "./node_modules/.bin/jest --watch",
+    "test:coverage": "./node_modules/.bin/jest --coverage",
     "build": "rm -rf ./dist && ./node_modules/.bin/webpack -p",
     "start": "./node_modules/.bin/webpack-dev-server --hot --inline"
   },
@@ -26,30 +28,53 @@
   "private": true,
   "devDependencies": {
     "autoprefixer": "~6.7.7",
-    "babel-core": "~6.24.0",
-    "babel-loader": "~6.4.1",
+    "babel-core": "~6.24.1",
+    "babel-jest": "~19.0.0",
+    "babel-loader": "~7.0.0",
     "babel-polyfill": "~6.23.0",
-    "babel-preset-env": "~1.3.3",
-    "babel-preset-react": "~6.23.0",
+    "babel-preset-env": "~1.4.0",
+    "babel-preset-react": "~6.24.1",
     "bootstrap": "~4.0.0-alpha.6",
-    "css-loader": "~0.27.3",
-    "eslint": "~3.18.0",
-    "eslint-loader": "~1.7.0",
+    "css-loader": "~0.28.0",
+    "enzyme": "~2.8.2",
+    "eslint": "~3.19.0",
+    "eslint-loader": "~1.7.1",
     "eslint-plugin-react": "~6.10.3",
     "extract-text-webpack-plugin": "~2.1.0",
-    "file-loader": "~0.10.1",
+    "file-loader": "~0.11.1",
     "html-webpack-plugin": "~2.28.0",
+    "jest": "~19.0.2",
     "node-sass": "~4.5.2",
-    "postcss-flexbugs-fixes": "~2.1.0",
+    "postcss-flexbugs-fixes": "~2.1.1",
     "postcss-loader": "~1.3.3",
-    "react": "~15.4.2",
-    "react-dom": "~15.4.2",
-    "react-router-dom": "~4.0.0",
+    "prop-types": "~15.5.8",
+    "react": "~15.5.4",
+    "react-addons-test-utils": "~15.5.1",
+    "react-dom": "~15.5.4",
+    "react-router-dom": "~4.1.1",
+    "react-test-renderer": "~15.5.4",
     "sass-loader": "~6.0.3",
-    "style-loader": "~0.16.0",
+    "style-loader": "~0.16.1",
     "url-loader": "~0.5.8",
-    "webpack": "~2.3.3",
-    "webpack-dev-server": "~2.4.2",
+    "webpack": "~2.4.1",
+    "webpack-dev-server": "~2.4.5",
     "whatwg-fetch": "~2.0.3"
+  },
+  "jest": {
+    "verbose": true,
+    "moduleDirectories": [
+      "src",
+      "node_modules"
+    ],
+    "moduleNameMapper": {
+      "^.+\\.(jpg|jpeg|png|gif|eot|otf|webp|svg|ttf|woff|woff2|mp4|webm|wav|mp3|m4a|aac|oga)$": "<rootDir>/jest-mock-files.js",
+      "^.+\\.(scss|css)$": "<rootDir>/jest-mock-styles.js"
+    },
+    "collectCoverageFrom": [
+      "src/**/*.{js,jsx}",
+      "!node_modules/**",
+      "!src/index.jsx",
+      "!src/store.jsx"
+    ]
   }
 }

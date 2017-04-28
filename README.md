@@ -9,7 +9,6 @@ on a terminal or command line interface (assuming that your machine already has
 
 ```
 git clone https://github.com/jenofdoom/react-intermediate.git
-cd js-build-pipelines-training
 ```
 
 ### Install node, npm and project dependencies
@@ -29,7 +28,8 @@ If you have a favourite code editor feel free to use that, but I recommend
 [Atom](https://atom.io/).
 
 In Atom, right click in the left panel, select `Add Project Folder` and open the
-`react-intermediate/tutorial` folder. The `example` folder has a working version of what we'll be building.
+`react-intermediate/tutorial` folder. The `example` folder has a working version
+of what we'll be building.
 
 In a terminal:
 
@@ -38,22 +38,6 @@ cd react-intermediate/tutorial
 npm install
 npm start
 ```
-
-## Structuring for maintainability
-
-There is a __lot__ of different opinions on this topic and you will see projects
-that differ wildly. To a large extent it sort of depends on your project size... a very small project _could_ be just one file.
-
-I've found that subfolders for components plus their styles and tests works, with separate folders for other types of constructs like actions and reducers works well for medium sized projects. The example projecct for today uses this structure.
-
-For a much larger projects, you should consider a _fractal_ structure (see [this
-discussion](http://www.developersite.org/103-121750-javascript) for some detail
-on what that entails) where the prjecct is split into self contained functional
-areas that contain all of their dependencies inline (so rather than having a
-actions folder at the root of the src tree, the one action file that you need
-for that piece is self contained there).
-[react-redux-starter-kit](https://github.com/davezuko/react-redux-starter-kit)
-partially implements this pattern.
 
 ## Adding Redux for state management
 
@@ -198,6 +182,19 @@ export default connect(mapStateToProps)(Homepage);
 `mapStateToProps` is where we unpack the data we recieve back from the reducer,
 and set the props value that we care about up for the component to consume.
 
+Now we're passing the data in, we should update our `for` loop that sets up the
+holes with a new property, `active`:
+
+```
+for (let i = 0; i < this.props.holeState.length; i++) {
+  holes.push(<Hole key={'hole-' + i} id={i} active={this.props.holeState[i]} />);
+}
+```
+
+Alternatively, we could have connected each `hole` component individually to the
+store, but as we have an array of values rather that an object, that doesn't
+make much sense in this case.
+
 We should also add in the missing
 [propTypes](https://facebook.github.io/react/docs/typechecking-with-proptypes.html#proptypes)
 for the prop we've just added - although it doesn't get passed in from the
@@ -212,30 +209,26 @@ Homepage.propTypes = {
 Don't forget to import `PropTypes` at the top of the file:
 
 ```
-import React, { Component, PropTypes } from 'react';
+import PropTypes from 'prop-types';
 ```
-
-Now we're passing the data in, we should update our `for` loop that sets up the
-holes with a new property, `active`:
-
-```
-for (let i = 0; i < this.props.holeState.length; i++) {
-  holes.push(<Hole key={'hole-' + i} id={i} active={this.props.holeState[i]} />);
-}
-```
-
-Alternatively, we could have connected each `hole` component individually to the store, but as we have an array of values rather that an object, that doesn't make much sense in this case.
 
 In a redux application, it is __not__ necessary to connect every single
 component up to the store. We can still use normal methods of passing props
 between components where is makes sense to.
 
+We can test that the store is connected to the component properly by changing
+the number of the holes in the reducer (the value of `holesLength`).
+
+#### Update the hole component
+
 Now let's hook our new prop up in `hole.jsx` - we need to delete some exisiting
 stuff first because we no longer want to be using state to control if the frog
-is active, and we shoun't need our activate buttons any more either:
+is active, and we shouldn't need our activate buttons any more either (we also
+need to add PropTypes):
 
 ```
-import React, { Component, PropTypes } from 'react';
+import React, { Component, } from 'react';
+import PropTypes from 'prop-types';
 
 import holeMask from 'assets/img/hole-mask.svg';
 import './hole.scss';
@@ -298,7 +291,8 @@ The `startGame` function is an
 [action-creator](http://redux.js.org/docs/basics/Actions.html#action-creators)
 which must be invoked via a `dispatch` operation.
 
-If we had a bigger application it would probably be wise to split our actions up into groups of different files by functional area.
+If we had a bigger application it would probably be wise to split our actions up
+into groups of different files by functional area.
 
 In `controls.jsx`, first import the `connect` function and your action:
 
@@ -497,7 +491,8 @@ component up to `connect`), and add back in a method for the click action on the
 frog:
 
 ```
-import React, { Component, PropTypes } from 'react';
+import React, { Component, } from 'react';
+import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 
 import holeMask from 'assets/img/hole-mask.svg';
@@ -611,14 +606,16 @@ works.
 
 ### Setting up Jest
 
-In a terminal in the `react-intermediate/tutorial` folder:
+__I have done this setup for you, but I'm documenting here what things had to be
+added to make Jest run__
+
+The Jest packages and some extra utils needed installing:
 
 ```
 npm install --save-dev jest babel-jest enzyme react-addons-test-utils react-test-renderer
 ```
 
-In `package.json` alter the scripts object so that the `test` command reads as
-follows (and add a line for `coverage` too):
+In `package.json` some extra scripts were added:
 
 ```
 "scripts": {
@@ -627,7 +624,7 @@ follows (and add a line for `coverage` too):
   "test:coverage": "./node_modules/.bin/jest --coverage",
 ```
 
-and also in `package.json` add a new key for the [Jest
+and also in `package.json` a new key was added for the [Jest
 configuration](https://facebook.github.io/jest/docs/configuration.html#content):
 
 ```
@@ -650,7 +647,7 @@ configuration](https://facebook.github.io/jest/docs/configuration.html#content):
 }
 ```
 
-Make two files in the root of the `tutorial` folder:
+Two mock files were created in the project root:
 
 `jest-mock-files.js`:
 
@@ -664,13 +661,13 @@ module.exports = 'test-file-stub';
 module.exports = {};
 ```
 
-Add a line to the `.gitignore` file:
+A line was added to the `.gitignore` file:
 
 ```
 coverage
 ```
 
-Modify `.babelrc` (alternatively we could get
+`.babelrc` was modified (alternatively we could get
 [Webpack](https://facebook.github.io/jest/docs/webpack.html) to run the tests
 for us):
 
@@ -696,16 +693,20 @@ for us):
 }
 ```
 
-We can now run the command line arguements:
+Because of this setup we can now run the command line arguments:
 
 ```
 npm run test
+npm run test:watch
 npm run test:coverage
 ```
 
+But the first two commands will complain about there not being any tests as yet!
+
 ### Writing a test
 
-First, in `example/src/components/hole/hole.jsx` change `class Hole extends Component {` to `export class Hole extends Component {`.
+First, in `example/src/components/hole/hole.jsx` change `class Hole extends
+Component {` to `export class Hole extends Component {`.
 
 Add a new file `example/src/components/hole/hole.test.js`:
 
@@ -762,8 +763,27 @@ are more explict when you're trying to make reusable components.
 article](https://medium.com/@franleplant/react-higher-order-components-in-depth-cf9032ee6c3e)
 examines HOCs in some detail.
 
-## Sidestepping build complexity with create-react-app
+## Structuring for maintainability
 
+There are a __lot__ of different opinions on this topic and you will see
+projects that differ wildly. To a large extent it sort of depends on your
+project size... a very small project _could_ be just one file.
+
+I've found that subfolders for components plus their styles and tests works,
+with separate folders for other types of constructs like actions and reducers
+works well for medium sized projects. The example projecct for today uses this
+structure.
+
+For a much larger projects, you should consider a _fractal_ structure (see [this
+discussion](http://www.developersite.org/103-121750-javascript) for some detail
+on what that entails) where the prjecct is split into self contained functional
+areas that contain all of their dependencies inline (so rather than having a
+actions folder at the root of the src tree, the one action file that you need
+for that piece is self contained there).
+[react-redux-starter-kit](https://github.com/davezuko/react-redux-starter-kit)
+partially implements this pattern.
+
+## Sidestepping build complexity with create-react-app
 
 An alternative to our Webpack process is
 [create-react-app](https://github.com/facebookincubator/create-react-app). let's
