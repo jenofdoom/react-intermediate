@@ -841,8 +841,8 @@ React Native is _not_:
 It is possible to resuse some of the application logic between a web project and
 a Native project, see [this
 article](http://jkaufman.io/react-web-native-codesharing/) for some tips. But
-you _defintely can't resuse the render methods_, and you might bump into issues
-with dependancies differing between the two, so you'd have to consider the pros
+you _definitely can't reuse the render methods_, and you might bump into issues
+with dependencies differing between the two, so you'd have to consider the pros
 and cons there.
 
 [NativeBase](https://nativebase.io/) can take some of the pain out of creating
