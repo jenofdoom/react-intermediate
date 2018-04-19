@@ -139,7 +139,7 @@ export default combineReducers({
 We've only set up one reducer, called `game`, but we've left our structure
 flexible by using
 [combineReducers](http://redux.js.org/docs/api/combineReducers.html) which means
-we can break off sepearate chunks of state later, and potentiall even break
+we can break off separate chunks of state later, and potentially even break
 those out into separate files.
 
 Right now the reducer only returns the initial state, as we aren't passing in
@@ -148,7 +148,7 @@ anything which sets new values.
 ### Connecting our hole components to the store
 
 In `reducers.js`, we want to actually set the initial state up with an array of
-the values for each hole (exporting the amount of holes we intend to have so we
+the values for each hole (exporting the number of holes we intend to have so we
 can use that number elsewhere later):
 
 ```
@@ -179,7 +179,7 @@ const mapStateToProps = (state) => {
 export default connect(mapStateToProps)(Homepage);
 ```
 
-`mapStateToProps` is where we unpack the data we recieve back from the reducer,
+`mapStateToProps` is where we unpack the data we receive back from the reducer,
 and set the props value that we care about up for the component to consume.
 
 Now we're passing the data in, we should update our `for` loop that sets up the
@@ -214,14 +214,14 @@ import PropTypes from 'prop-types';
 
 In a redux application, it is __not__ necessary to connect every single
 component up to the store. We can still use normal methods of passing props
-between components where is makes sense to.
+between components where it makes sense to.
 
 We can test that the store is connected to the component properly by changing
 the number of the holes in the reducer (the value of `holesLength`).
 
 #### Update the hole component
 
-Now let's hook our new prop up in `hole.jsx` - we need to delete some exisiting
+Now let's hook our new prop up in `hole.jsx` - we need to delete some existing
 stuff first because we no longer want to be using state to control if the frog
 is active, and we shouldn't need our activate buttons any more either (we also
 need to add PropTypes):
@@ -774,9 +774,9 @@ with separate folders for other types of constructs like actions and reducers
 works well for medium sized projects. The example projecct for today uses this
 structure.
 
-For a much larger projects, you should consider a _fractal_ structure (see [this
+For much larger projects, you should consider a _fractal_ structure (see [this
 discussion](http://www.developersite.org/103-121750-javascript) for some detail
-on what that entails) where the prjecct is split into self contained functional
+on what that entails) where the project is split into self contained functional
 areas that contain all of their dependencies inline (so rather than having a
 actions folder at the root of the src tree, the one action file that you need
 for that piece is self contained there).
