@@ -1,9 +1,9 @@
 import React, { Component, } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
+import { clickFrogAction } from 'actions/actions';
 
 import holeMask from 'assets/img/hole-mask.svg';
-import { clickFrogAction } from 'actions/actions';
 import './hole.scss';
 
 export class Hole extends Component {

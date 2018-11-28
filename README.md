@@ -16,7 +16,7 @@ git clone https://github.com/jenofdoom/react-intermediate.git
 First, we need to install [node.js](https://nodejs.org/) and its package
 manager, npm.
 
-[Ubuntu/Debian/Mint instructions](https://nodejs.org/en/download/package-manager/#debian-and-ubuntu-based-linux-distributions)
+[Ubuntu/Debian/Mint instructions](https://github.com/nodesource/distributions/blob/master/README.md#installation-instructions)
 
 [Mac instructions](http://blog.teamtreehouse.com/install-node-js-npm-mac)
 
@@ -39,6 +39,14 @@ npm install
 npm start
 ```
 
+## Our tutorial project
+
+We have the beginnings of a game already set up - there is a homepage which has
+several game components already embedded. Each hole already functions, but can
+currently only be triggered using the 'activate' button, and whether it is
+active or not is just stored in the the individual component's state, with no
+way of communicating that to other parts of the application.
+
 ## Adding Redux for state management
 
 Note that there are a _lot_ of different ways of structuring and implementing
@@ -57,34 +65,35 @@ npm install --save-dev redux redux-thunk redux-logger react-redux
 ### Wrap the application in a state provider
 
 In `src/index.jsx`, add the Provider and store imports, and wrap the `Router` in
-a `Provider`:
+a `Provider` (in the example below, a `+` indicates a line you should add to the
+existing file):
 
-```
-import React from 'react';
-import ReactDOM from 'react-dom';
-import { BrowserRouter as Router, Route } from 'react-router-dom';
-import { Provider } from 'react-redux';
-import configureStore from 'store';
+```diff
+  import React from 'react';
+  import ReactDOM from 'react-dom';
+  import { BrowserRouter as Router, Route } from 'react-router-dom';
++ import { Provider } from 'react-redux';
++ import configureStore from 'store';
 
-import 'index.scss';
-import Homepage from 'components/homepage/homepage';
-import About from 'components/about/about';
-import Nav from 'components/nav/nav';
+  import 'index.scss';
+  import Homepage from 'components/homepage/homepage';
+  import About from 'components/about/about';
+  import Nav from 'components/nav/nav';
 
-const store = configureStore();
++ const store = configureStore();
 
-ReactDOM.render(
-  <Provider store={store}>
-    <Router>
-      <div className="container-fluid">
-        <Nav />
-        <Route exact path="/" component={Homepage}/>
-        <Route path="/about" component={About}/>
-      </div>
-    </Router>
-  </Provider>,
-  document.getElementById('app')
-);
+  ReactDOM.render(
++   <Provider store={store}>
+      <Router>
+        <div className="container-fluid">
+          <Nav />
+          <Route exact path="/" component={Homepage}/>
+          <Route path="/about" component={About}/>
+        </div>
+      </Router>
++   </Provider>,
+    document.getElementById('app')
+  );
 ```
 
 ### Configure the state store
@@ -149,7 +158,7 @@ anything which sets new values.
 
 In `reducers.js`, we want to actually set the initial state up with an array of
 the values for each hole (exporting the number of holes we intend to have so we
-can use that number elsewhere later):
+can use that number elsewhere later) - replace the existing `initialGameState` declaration:
 
 ```
 export const holesLength = 5;
@@ -192,7 +201,7 @@ for (let i = 0; i < this.props.holeState.length; i++) {
 ```
 
 Alternatively, we could have connected each `hole` component individually to the
-store, but as we have an array of values rather that an object, that doesn't
+store, but as we have an array of values rather than an object, that doesn't
 make much sense in this case.
 
 We should also add in the missing
@@ -224,50 +233,69 @@ the number of the holes in the reducer (the value of `holesLength`).
 Now let's hook our new prop up in `hole.jsx` - we need to delete some existing
 stuff first because we no longer want to be using state to control if the frog
 is active, and we shouldn't need our activate buttons any more either (we also
-need to add PropTypes):
+need to add PropTypes) - a `+` indicates a new line, and a `-` indicates a line
+we should remove:
 
-```
-import React, { Component, } from 'react';
-import PropTypes from 'prop-types';
+```diff
+  import React, { Component } from 'react';
++ import PropTypes from 'prop-types';
 
-import holeMask from 'assets/img/hole-mask.svg';
-import './hole.scss';
+  import holeMask from 'assets/img/hole-mask.svg';
+  import './hole.scss';
 
-class Hole extends Component {
-  render () {
-    let frogClass = 'frog';
+  class Hole extends Component {
+-   constructor (props) {
+-     super(props);
+-
+-     this.state = {
+-       frogActive: false
+-     };
+-
+-     this.toggleFrog = this.toggleFrog.bind(this);
+-   }
+-
+-   toggleFrog () {
+-     this.setState({
+-       frogActive: !this.state.frogActive
+-     });
+-   }
+-    
+    render () {
+      let frogClass = 'frog';
 
-    if (this.props.active) {
-      frogClass = 'frog up';
-    }
+-     if (this.state.frogActive) {
++     if (this.props.active) {
+        frogClass = 'frog up';
+      }
 
-    return (
-      <div className="hole-container">
-        <div className="hole">
-          <div className={frogClass}></div>
-          <img src={holeMask} className='hole-mask' />
+      return (
+        <div className="hole-container">
+-         <button onClick={this.toggleFrog}>ACTIVATE</button>
+          <div className="hole">
+            <div className={frogClass}></div>
+            <img src={holeMask} className='hole-mask' />
+          </div>
         </div>
-      </div>
-    );
+      );
+    }
   }
-}
 
-Hole.propTypes = {
-  active: PropTypes.bool.isRequired
-};
++ Hole.propTypes = {
++   active: PropTypes.bool.isRequired
++ };
 
-export default Hole;
+  export default Hole;
 ```
 
 Now our component is connected (via its parent) to the store, if we change the
 `initialGameState` values we can set some frogs on manually. Test that that
 works by setting the `.fill()` in `reducers.jsx` to set all the values to `true`
-intitally (and then set it back again once you're happy that that works).
+initially (and then set it back again once you're happy that that works).
 
 ### Our first action
 
 To start the game, we want the user to hit the start button, which will trigger
-one of the frogs popping up. When we want to trigger an action, we use a redux
+one of the frogs popping up. When we want to trigger an action, we use a Redux
 function called 'dispatch'.
 
 Make a new file, `actions/actions.js`:
@@ -282,7 +310,7 @@ export const startGame = () => {
 };
 ```
 
-It is not strictly speaking necessary to set up the action type as a const, but
+It is not strictly speaking necessary to set up the action type as a `const`, but
 doing so ensures that we don't garble them as we need to use them both here and
 in the reducer, too. See [the
 docs](http://redux.js.org/docs/basics/Actions.html) for more on this.
@@ -327,33 +355,35 @@ export default connect(mapStateToProps)(Controls);
 ```
 
 In `reducers/reducers.js`, import the action type, add a new key value pair to
-the `initialGameState`, and add a case for the action type:
+the `initialGameState`, and add a case for the action type  - a `+` indicates a
+new line, and a `-` indicates a line we should remove:
 
-```
-import { combineReducers } from 'redux';
-import { START_GAME } from 'actions/actions';
+```diff
+  import { combineReducers } from 'redux';
++ import { START_GAME } from 'actions/actions';
 
-export const holesLength = 5;
+  export const holesLength = 5;
 
-const initialGameState = {
-  holeState: Array(holesLength).fill(false),
-  isGameActive: false
-};
+  const initialGameState = {
+-   holeState: Array(holesLength).fill(false)
++   holeState: Array(holesLength).fill(false),
++    isGameActive: false
+  };
 
-const game = (state = initialState, action) => {
-  switch (action.type) {
-  case START_GAME:
-    return Object.assign({}, state, {
-      isGameActive: true
-    });
-  default:
-    return state;
-  }
-};
+  const game = (state = initialState, action) => {
+    switch (action.type) {
++   case START_GAME:
++     return Object.assign({}, state, {
++       isGameActive: true
++     });
+    default:
+      return state;
+    }
+  };
 
-export default combineReducers({
-  game
-});
+  export default combineReducers({
+    game
+  });
 ```
 
 ### More complex actions
@@ -365,42 +395,42 @@ action.
 
 In `actions/actions.js`:
 
-```
-import { holesLength } from 'reducers/reducers';
+```diff
++ import { holesLength } from 'reducers/reducers';
 
-export const START_GAME = 'START_GAME';
-export const ALTER_HOLES = 'ALTER_HOLES';
+  export const START_GAME = 'START_GAME';
++ export const ALTER_HOLES = 'ALTER_HOLES';
 
-const startGame = () => {
-  return {
-    type: START_GAME
+  const startGame = () => {
+    return {
+      type: START_GAME
+    };
   };
-};
-
-const alterHoles = (holeState) => {
-  return {
-    type: ALTER_HOLES,
-    holeState: holeState
-  };
-};
-
-const getRandomInt = (min, max) => {
-  return Math.floor(Math.random() * (max - min)) + min;
-};
-
-export const startGameAction = () => {
-  return (dispatch, getState) => {
-    dispatch(startGame());
-
-    let newState = getState().game.holeState.slice(0);
-    newState[getRandomInt(0, holesLength)] = true;
-    dispatch(alterHoles(newState));
-  };
-};
++
++ const alterHoles = (holeState) => {
++  return {
++     type: ALTER_HOLES,
++     holeState: holeState
++   };
++ };
++
++ const getRandomInt = (min, max) => {
++   return Math.floor(Math.random() * (max - min)) + min;
++ };
++
++ export const startGameAction = () => {
++   return (dispatch, getState) => {
++     dispatch(startGame());
++
++     let newState = getState().game.holeState.slice(0);
++     newState[getRandomInt(0, holesLength)] = true;
++     dispatch(alterHoles(newState));
++   };
++ };
 ```
 
 Note that we had to create a new action (_not_ action creator) here,
-`startGameAction`, to group togther our two dispatches plus some logic. The
+`startGameAction`, to group together our two dispatches plus some logic. The
 action function has a weird structure - that's because we are using the
 [thunk](https://github.com/gaearon/redux-thunk#motivation) middleware which
 makes it so that we can delay the dispatch if we need to via an asynchronous
@@ -422,35 +452,36 @@ import { startGameAction } from 'actions/actions';
 
 In `reducers/reducers.js` let's add our new action type:
 
-```
-import { combineReducers } from 'redux';
-import { START_GAME, ALTER_HOLES } from 'actions/actions';
+```diff
+  import { combineReducers } from 'redux';
+- import { START_GAME } from 'actions/actions';  
++ import { START_GAME, ALTER_HOLES } from 'actions/actions';
 
-export const holesLength = 5;
+  export const holesLength = 5;
 
-const initialGameState = {
-  holeState: Array(holesLength).fill(false),
-  isGameActive: false
-};
+  const initialGameState = {
+    holeState: Array(holesLength).fill(false),
+    isGameActive: false
+  };
 
-const game = (state = initialGameState, action) => {
-  switch (action.type) {
-  case START_GAME:
-    return Object.assign({}, state, {
-      isGameActive: true
-    });
-  case ALTER_HOLES:
-    return Object.assign({}, state, {
-      holeState: action.holeState
-    });
-  default:
-    return state;
-  }
-};
+  const game = (state = initialGameState, action) => {
+    switch (action.type) {
+    case START_GAME:
+      return Object.assign({}, state, {
+        isGameActive: true
+      });
++   case ALTER_HOLES:
++     return Object.assign({}, state, {
++       holeState: action.holeState
++     });
+    default:
+      return state;
+    }
+  };
 
-export default combineReducers({
-  game
-});
+  export default combineReducers({
+    game
+  });
 
 ```
 
@@ -459,7 +490,7 @@ Clicking on the start should now trigger one of the frogs.
 ### Hooking the frogs up
 
 Now we need a click action on the frogs that should trigger 1) hiding that frog
-and 2) randomly popping up another. In `actions/actions.js`:
+and 2) randomly popping up another. At the bottom of `actions/actions.js`:
 
 ```
 export const clickFrogAction = (frogId) => {
@@ -482,63 +513,66 @@ export const clickFrogAction = (frogId) => {
 ```
 
 You'll notice here that we perform a `slice` operation whenever we get the
-curent state. That's because we want a copy of the array rather that a reference
+current state. That's because we want a copy of the array rather that a reference
 to it. Reducers in redux _must_ have immutable state that gets overwritten
 rather than mutated in order to properly trigger changes downstream.
 
-In `holes.jsx` we should import the action (which means we have to hook the
+In `hole.jsx` we should import the action (which means we have to hook the
 component up to `connect`), and add back in a method for the click action on the
 frog:
 
-```
-import React, { Component, } from 'react';
-import PropTypes from 'prop-types';
-import { connect } from 'react-redux';
+```diff
+  import React, { Component } from 'react';
+  import PropTypes from 'prop-types';
++ import { connect } from 'react-redux';
++ import { clickFrogAction } from 'actions/actions';
 
-import holeMask from 'assets/img/hole-mask.svg';
-import { clickFrogAction } from 'actions/actions';
-import './hole.scss';
+  import holeMask from 'assets/img/hole-mask.svg';
+  import './hole.scss';
 
-class Hole extends Component {
-  constructor (props) {
-    super(props);
+  class Hole extends Component {
++   constructor (props) {
++     super(props);
++
++     this.frogClick = this.frogClick.bind(this);
++   }
++
++   frogClick () {
++     this.props.dispatch(clickFrogAction(this.props.id));
++   }
++
+    render () {
+      let frogClass = 'frog';
 
-    this.frogClick = this.frogClick.bind(this);
-  }
+      if (this.props.active) {
+        frogClass = 'frog up';
+      }
 
-  frogClick () {
-    this.props.dispatch(clickFrogAction(this.props.id));
-  }
-
-  render () {
-    let frogClass = 'frog';
-
-    if (this.props.active) {
-      frogClass = 'frog up';
-    }
-
-    return (
-      <div className="hole-container">
-        <div className="hole">
-          <div className={frogClass} onClick={this.frogClick}></div>
-          <img src={holeMask} className='hole-mask' />
+      return (
+        <div className="hole-container">
+          <div className="hole">
+-           <div className={frogClass}></div>
++           <div className={frogClass} onClick={this.frogClick}></div>
+            <img src={holeMask} className='hole-mask' />
+          </div>
         </div>
-      </div>
-    );
+      );
+    }
   }
-}
 
-Hole.propTypes = {
-  active: PropTypes.bool.isRequired,
-  dispatch: PropTypes.func.isRequired,
-  id: PropTypes.number.isRequired
-};
+  Hole.propTypes = {
+-   active: PropTypes.bool.isRequired
++   active: PropTypes.bool.isRequired,
++   dispatch: PropTypes.func.isRequired,
++   id: PropTypes.number.isRequired
+  };
 
-const mapStateToProps = () => {
-  return {};
-};
-
-export default connect(mapStateToProps)(Hole);
++ const mapStateToProps = () => {
++   return {};
++ };
++
+- export default Hole;
++ export default connect(mapStateToProps)(Hole);
 ```
 
 That should take care of chaining together all the frogs appearing. Now we have
@@ -553,51 +587,11 @@ Try:
 * refactoring the controls component so the game timer is moved to actions
 * setting up a score counter that increments on each click
 * resetting the score to 0 on START_GAME
-* making frogs dissapear automatically if they aren't clicked after an interval
-
-## Fetch
-
-React has no tooling of its own for AJAX, so you need to either use the browsers
-native `XMLHttpRequest`, another library, or (what I'd recommend) the modern replacement for
-`XMLHttpRequest`, which is called
-[fetch](https://developer.mozilla.org/en/docs/Web/API/Fetch_API). Unfortunately
-IE does not support `fetch` (Edge does) so we need a polyfill if we want to
-support IE. The popular polyfill for this is [whatwg-fetch](https://github.com/github/fetch), but you'll also need a polyfill for promises too - [babel-polyfill](https://babeljs.io/docs/usage/polyfill/) can take care of that requirement (both of these are already in place for the webpack build for this project).
-
-A fetch chain looks something like:
-
-```
-fetch('http://example.com/api/')
-  .then(checkStatus())
-  .then(response => response.json())
-  .then(json => {
-    // do something with json here - dispatch an action?
-  })
-  .catch(error => {
-    // do something about your error here
-  });
-```
-
-where `checkStatus` is a function that you'd always inset into fetch calls to catch error status codes where a response did get returned:
-
-```
-export function checkStatus (response) {
-  if (response.status >= 200 && response.status < 300) {
-    return response
-  } else {
-    var error = new Error(response.statusText)
-    error.response = response
-    throw error
-  }
-}
-```
-
-You can put fetch chains inside your redux thunk actions in order to trigger
-dispatches once the promise is resolved.
+* making frogs disappear automatically if they aren't clicked after an interval
 
 ## Testing with Jest
 
-Although there are man test frameworks that you could consider integrating with
+Although there are many test frameworks that you could consider integrating with
 your React project, broadly speaking [Jest](https://facebook.github.io/jest/) is
 the most popular and well-integrated. We also use
 [enzyme](http://airbnb.io/enzyme/docs/guides/jest.html) to make assertions about
@@ -737,7 +731,7 @@ describe('initial render of Hole', () => {
 });
 ```
 
-Enzyme has serveral differnt types of rendering (shallow is what we use most
+Enzyme has several different types of rendering (shallow is what we use most
 commonly, but sometimes we might need mount). Each method has its own
 [api](http://airbnb.io/enzyme/docs/api/shallow.html#shallowwrapper-api), for
 example we use
@@ -748,6 +742,46 @@ and then state the outcome we
 use a [mock function](https://facebook.github.io/jest/docs/mock-functions.html)
 from Jest to mock the dispatch prop.
 
+## Fetch
+
+React has no tooling of its own for AJAX, so you need to either use the browsers
+native `XMLHttpRequest`, another library, or (what I'd recommend) the modern replacement for
+`XMLHttpRequest`, which is called
+[fetch](https://developer.mozilla.org/en/docs/Web/API/Fetch_API). Unfortunately
+IE does not support `fetch` (Edge does) so we need a polyfill if we want to
+support IE. The popular polyfill for this is [whatwg-fetch](https://github.com/github/fetch), but you'll also need a polyfill for promises too - [babel-polyfill](https://babeljs.io/docs/usage/polyfill/) can take care of that requirement (both of these are already in place for the webpack build for this project).
+
+A fetch chain looks something like:
+
+```
+fetch('http://example.com/api/')
+  .then(checkStatus())
+  .then(response => response.json())
+  .then(json => {
+    // do something with json here - dispatch an action?
+  })
+  .catch(error => {
+    // do something about your error here
+  });
+```
+
+where `checkStatus` is a function that you'd always inset into fetch calls to catch error status codes where a response did get returned:
+
+```
+export function checkStatus (response) {
+  if (response.status >= 200 && response.status < 300) {
+    return response
+  } else {
+    var error = new Error(response.statusText)
+    error.response = response
+    throw error
+  }
+}
+```
+
+You can put fetch chains inside your redux thunk actions in order to trigger
+dispatches once the promise is resolved.
+
 ## Higher Order Components
 
 A higher-order component, or
@@ -757,7 +791,7 @@ content - kind of like a decorator, but for components (or like Angular 1's
 concept of transclusion).
 
 It's possible to achieve code reuse through the use of subclassing, but HOC's
-are more explict when you're trying to make reusable components.
+are more explicit when you're trying to make reusable components.
 
 [This
 article](https://medium.com/@franleplant/react-higher-order-components-in-depth-cf9032ee6c3e)
@@ -771,7 +805,7 @@ project size... a very small project _could_ be just one file.
 
 I've found that subfolders for components plus their styles and tests works,
 with separate folders for other types of constructs like actions and reducers
-works well for medium sized projects. The example projecct for today uses this
+works well for medium sized projects. The example project for today uses this
 structure.
 
 For much larger projects, you should consider a _fractal_ structure (see [this
@@ -787,7 +821,7 @@ partially implements this pattern.
 
 An alternative to our Webpack process is
 [create-react-app](https://github.com/facebookincubator/create-react-app). let's
-eplore how that works:
+explore how that works:
 
 ```
 cd ~
@@ -807,6 +841,10 @@ an explore.
 ```
 npm run eject
 ```
+
+A simpler alternative to create-react-app is our own
+[catalyst-frontend](https://www.npmjs.com/package/catalyst-frontend) build tool.
+This gives you the config straight away, which makes it easier to customise.
 
 ## Making your React app production ready
 
@@ -838,7 +876,7 @@ React Native is _not_:
 * A magical way of making your web application into a mobile app with no effort
 * Not perfectly cross-platform 100% of the time, e.g. you need a third party component [react-native-datepicker](https://github.com/xgfe/react-native-datepicker) to abstract the date picker widget between platforms
 
-It is possible to resuse some of the application logic between a web project and
+It is possible to re-use some of the application logic between a web project and
 a Native project, see [this
 article](http://jkaufman.io/react-web-native-codesharing/) for some tips. But
 you _definitely can't reuse the render methods_, and you might bump into issues
