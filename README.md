@@ -45,7 +45,9 @@ We have the beginnings of a game already set up - there is a homepage which has
 several game components already embedded. Each hole already functions, but can
 currently only be triggered using the 'activate' button, and whether it is
 active or not is just stored in the the individual component's state, with no
-way of communicating that to other parts of the application.
+way of communicating that to other parts of the application. Because it's only
+in the individual component, you can also see that if you activate one and move
+to the 'About' page, the state is lost.
 
 ## Adding Redux for state management
 
@@ -158,7 +160,8 @@ anything which sets new values.
 
 In `reducers.js`, we want to actually set the initial state up with an array of
 the values for each hole (exporting the number of holes we intend to have so we
-can use that number elsewhere later) - replace the existing `initialGameState` declaration:
+can use that number elsewhere later) - replace the existing `initialGameState`
+declaration:
 
 ```
 export const holesLength = 5;
@@ -322,9 +325,11 @@ which must be invoked via a `dispatch` operation.
 If we had a bigger application it would probably be wise to split our actions up
 into groups of different files by functional area.
 
-In `controls.jsx`, first import the `connect` function and your action:
+In `controls.jsx`, first import the `connect` function and your action (and
+prop-types):
 
 ```
+import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { startGame } from 'actions/actions';
 ```
@@ -401,7 +406,8 @@ In `actions/actions.js`:
   export const START_GAME = 'START_GAME';
 + export const ALTER_HOLES = 'ALTER_HOLES';
 
-  const startGame = () => {
+- export const startGame = () => {
++ const startGame = () => {
     return {
       type: START_GAME
     };
