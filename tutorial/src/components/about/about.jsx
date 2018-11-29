@@ -11,7 +11,11 @@ class About extends Component {
         </div>
         <div className="row">
           <div className="col">
-            <p>An example project for the <a href="https://github.com/jenofdoom/react-intermediate">React Intermediate</a> training.</p>
+            <p>
+              An example project for the 
+              <a href="https://github.com/jenofdoom/react-intermediate">React Intermediate</a>
+              training.
+            </p>
           </div>
         </div>
       </div>

@@ -1,7 +1,8 @@
 {
     "env": {
         "browser": true,
-        "es6": true
+        "es6": true,
+        "jest": true
     },
     "plugins": [
         "react"
@@ -11,8 +12,8 @@
         "plugin:react/recommended"
     ],
     "parserOptions": {
+        "ecmaVersion": 2018,
         "ecmaFeatures": {
-            "experimentalObjectRestSpread": true,
             "jsx": true
         },
         "sourceType": "module"
@@ -28,14 +29,16 @@
         ],
         "quotes": [
             "warn",
-            "single"
+            "single",
+            { "allowTemplateLiterals": true }
         ],
         "semi": [
             "warn",
             "always"
         ],
         "no-console": ["warn"],
-        "no-unused-vars": ["warn"]
+        "no-unused-vars": ["warn"],
+        "max-len": ["warn", { "code": 120 , "ignoreComments": true }]
     },
     "globals": {
         "process": true
