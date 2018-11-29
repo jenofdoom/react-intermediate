@@ -612,7 +612,7 @@ added to make Jest run__
 The Jest packages and some extra utils needed installing:
 
 ```
-npm install --save-dev jest babel-jest enzyme react-addons-test-utils react-test-renderer
+npm install --save-dev jest babel-jest enzyme enzyme-adapter-react-16 react-addons-test-utils react-test-renderer
 ```
 
 In `package.json` some extra scripts were added:
@@ -643,8 +643,21 @@ configuration](https://facebook.github.io/jest/docs/configuration.html#content):
     "!node_modules/**",
     "!src/index.jsx",
     "!src/store.jsx"
+  ],
+  "setupFiles": [
+    "./jest-setup.js"
   ]
 }
+```
+
+The setup file `jest-setup.js` is in the project root and has the following
+config:
+
+```
+import { configure } from 'enzyme';
+import Adapter from 'enzyme-adapter-react-16';
+
+configure({ adapter: new Adapter() });
 ```
 
 Two mock files were created in the project root:
@@ -672,25 +685,15 @@ coverage
 for us):
 
 ```
-{
-  "presets": [
-    "react",
-    [
-      "env",
-      {
-        "targets": {
-          "uglify": true
-        },
-        "modules": false
-      }
-    ]
-  ],
+~~~etc~~~
+
   "env": {
     "test": {
       "plugins": ["transform-es2015-modules-commonjs"]
     }
   }
-}
+
+~~~etc~~~
 ```
 
 Because of this setup we can now run the command line arguments:
@@ -705,8 +708,13 @@ But the first two commands will complain about there not being any tests as yet!
 
 ### Writing a test
 
-First, in `example/src/components/hole/hole.jsx` change `class Hole extends
-Component {` to `export class Hole extends Component {`.
+First, in `example/src/components/hole/hole.jsx` change:
+
+`class Hole extends Component {` 
+  
+to :
+
+`export class Hole extends Component {`
 
 Add a new file `example/src/components/hole/hole.test.js`:
 
@@ -751,11 +759,15 @@ from Jest to mock the dispatch prop.
 ## Fetch
 
 React has no tooling of its own for AJAX, so you need to either use the browsers
-native `XMLHttpRequest`, another library, or (what I'd recommend) the modern replacement for
-`XMLHttpRequest`, which is called
+native `XMLHttpRequest`, another library, or (what I'd recommend) the modern
+replacement for `XMLHttpRequest`, which is called
 [fetch](https://developer.mozilla.org/en/docs/Web/API/Fetch_API). Unfortunately
 IE does not support `fetch` (Edge does) so we need a polyfill if we want to
-support IE. The popular polyfill for this is [whatwg-fetch](https://github.com/github/fetch), but you'll also need a polyfill for promises too - [babel-polyfill](https://babeljs.io/docs/usage/polyfill/) can take care of that requirement (both of these are already in place for the webpack build for this project).
+support IE. The popular polyfill for this is
+[whatwg-fetch](https://github.com/github/fetch), but you'll also need a polyfill
+for promises too - [babel-polyfill](https://babeljs.io/docs/usage/polyfill/) can
+take care of that requirement (both of these are already in place for the
+webpack build for this project).
 
 A fetch chain looks something like:
 
@@ -771,7 +783,8 @@ fetch('http://example.com/api/')
   });
 ```
 
-where `checkStatus` is a function that you'd always inset into fetch calls to catch error status codes where a response did get returned:
+where `checkStatus` is a function that you'd always inset into fetch calls to
+catch error status codes where a response did get returned:
 
 ```
 export function checkStatus (response) {
