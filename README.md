@@ -8,7 +8,7 @@ on a terminal or command line interface (assuming that your machine already has
 [git available](https://git-scm.com/downloads)):
 
 ```
-git clone https://github.com/jenofdoom/react-intermediate.git
+git clone https://github.com/realrussiandev/react-intermediate.git
 ```
 
 ### Install node, npm and project dependencies
@@ -710,8 +710,8 @@ But the first two commands will complain about there not being any tests as yet!
 
 First, in `example/src/components/hole/hole.jsx` change:
 
-`class Hole extends Component {` 
-  
+`class Hole extends Component {`
+
 to :
 
 `export class Hole extends Component {`
@@ -885,7 +885,7 @@ if (process.env.NODE_ENV !== 'production') {
 
 [React Native](https://facebook.github.io/react-native/) is:
 
-* Proper native app code, not a webviews solution like Cordova
+* Using mobile native rendering APIs, not a webviews solution like Cordova
 * For both iOS and Android
 * A good developer environment - you get _much_ faster development builds compared to e.g. Cordova
 * A way of use native mobile APIs like the Camera
