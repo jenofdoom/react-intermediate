@@ -1,0 +1,366 @@
+<!doctype html>
+<html lang="en">
+
+    <head>
+        <meta charset="utf-8">
+
+        <title>Reveal Presentation Template - Catalyst</title>
+
+        <meta name="author" content="Catalyst">
+
+        <meta name="apple-mobile-web-app-capable" content="yes" />
+        <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+        <link rel="stylesheet" href="css/reveal.css">
+        <link rel="stylesheet" href="css/theme/catalyst.css" id="theme">
+
+        <!-- For syntax highlighting -->
+        <!-- <link rel="stylesheet" href="lib/css/zenburn.css"> -->
+        <link rel="stylesheet" href="lib/css/catalyst-syntax.css">
+
+        <!-- If the query includes 'print-pdf', include the PDF print sheet -->
+        <script>
+            if( window.location.search.match( /print-pdf/gi ) ) {
+                var link = document.createElement( 'link' );
+                link.rel = 'stylesheet';
+                link.type = 'text/css';
+                link.href = window.location.search.match( /print-pdf/gi ) ? 'css/print/pdf.css' : 'css/print/paper.css';
+                document.getElementsByTagName( 'head' )[0].appendChild( link );
+            }
+        </script>
+
+        <style>
+            /* Add the ability to omit slides from the printed version (has to be after the print include)*/
+            @media print {
+                .reveal .slides section.no-print {
+                    display: none !important;
+                    visibility: hidden !important;
+                }
+            }
+        </style>
+
+        <!--[if lt IE 9]>
+        <script src="lib/js/html5shiv.js"></script>
+        <![endif]-->
+
+        <!-- Please put any custom styles here -->
+        <style>
+
+        </style>
+    </head>
+
+    <body>
+
+        <div class="reveal">
+
+            <!-- Any section element inside of this container is displayed as a slide -->
+            <div class="slides">
+                <!-- Cover slide -->
+                <section>
+                    <h3>React Intermediate</h3>
+                    <h1 class="catalyst-logo">Catalyst</h1>
+                    <p class="small-text">
+                        Presented by <a href="#">Alexey Omelchenko</a>
+                    </p>
+                </section>
+
+                <!-- Section title slide with big colour dot -->
+                <section>
+                    <h4 class="orange">Admin stuff...</h4>
+                    <aside class="notes">
+                        breaks bathroom
+                    </aside>
+                </section>
+
+                <section>
+                  <h3>What do you want to learn?</h3>
+                </section>
+
+                <section>
+                  <h2>Agenda</h2>
+
+                  <ul>
+                    <li class="fragment">Recap</li>
+                    <li class="fragment">HOC</li>
+                    <li class="fragment">Hooks</li>
+                    <li class="fragment">State management</li>
+                    <li class="fragment">Testing</li>
+                    <li class="fragment">Typescript</li>
+                  </ul>
+                </section>
+
+                <section>
+                <section>
+                  <h2>Recap</h2>
+
+                  <ul>
+                    <li class="fragment">Terminal...</li>
+                    <li class="fragment">React Component...</li>
+                    <li class="fragment">Functional vs Class...</li>
+                    <li class="fragment">State & Props...</li>
+                    <li class="fragment">PropTypes & Default Props...</li>
+                    <li class="fragment">Component Lifecycle...</li>
+                  </ul>
+                </section>
+                  <section>
+                    <h3>React Component</h3>
+                    <pre><code data-trim contenteditable>
+
+// React Component
+class MyWidget extends React.Component {
+  constructor(props) {
+    ...
+    this.state = { ... }
+  }
+
+  render() {
+    return ...
+  }
+}
+
+// Props declaration
+MyWidget.propTypes {
+  active: PropTypes.boolean
+}
+
+                    </code></pre>
+                  </section>
+                  </section>
+                <section>
+                <section>
+                  <h2>What is HOC?</h2>
+
+                  <ul>
+                    <li class="fragment">Why?</li>
+                    <li class="fragment">How?</li>
+                  </ul>
+                  <p class="fragment">
+                    <a href="https://reactjs.org/docs/higher-order-components.html">https://reactjs.org/docs/higher-order-components.html</a>
+                  </p>
+                </section>
+                <section>
+                  <h3>React Component</h3>
+                  <pre><code data-trim contenteditable>
+function logProps(WrappedComponent) {
+  return class extends React.Component {
+    componentWillReceiveProps(nextProps) {
+      console.log('Current props: ', this.props);
+      console.log('Next props: ', nextProps);
+    }
+    render() {
+      // Wraps the input component in a container, without mutating it. Good!
+      return <WrappedComponent {...this.props} />;
+    }
+  }
+}
+                  </code></pre>
+                  <aside class="notes">
+                    withRouter()
+                    connect()()
+                  </aside>
+
+                </section>
+                <section>
+                  <ul>
+                    <li class="fragment">withRouter()</li>
+                    <li class="fragment">connect()()</li>
+                  </ul>
+                </section>
+                </section>
+
+                <section>
+                  <section>
+                    <h2>React Hooks</h2>
+                    <ul>
+                      <li class="fragment">useState</li>
+                      <li class="fragment">useEffect</li>
+                      <li class="fragment">other...</li>
+                    </ul>
+                    <p class="fragment">
+                      <a href="https://reactjs.org/docs/hooks-reference.html">https://reactjs.org/docs/hooks-reference.html</a>
+                    </p>
+                  </section>
+
+                </section>
+
+                <section>
+                    <h3>Smart & Dumb Components</h3>
+
+                    <ul>
+                      <li>Why?</li>
+                    </ul>
+                  <aside class="notes">
+                    why ->
+                      readable code
+                      easier to test
+
+
+                    smart - manage data
+                    dumb - UI
+                  </aside>
+
+                </section>
+                <section>
+                <section>
+                  <h2>State management</h2>
+
+                  <ul>
+                    <li class="fragment">Why?</li>
+                    <li class="fragment">Redux vs Mobx vs Context API</li>
+                  </ul>
+
+                </section>
+
+                <section>
+                  <h3>Redux Architecture</h3>
+                </section>
+                </section>
+
+                <section>
+                  <h3>Code structure<h3>
+                  <p class="fragment">
+                    <a href="https://redux.js.org/faq/code-structure">https://redux.js.org/faq/code-structure</a>
+                  </p>
+                </section>
+
+
+                <section>
+                  <h2>Testing</h2>
+
+                  <ul>
+                    <li class="fragment">Why?</li>
+                    <li class="fragment">React Testing Library</li>
+                  </ul>
+                  <p class="fragment">
+                    <a href="https://testing-library.com/docs/react-testing-library/example-intro">https://testing-library.com/docs/react-testing-library/example-intro</a>
+                  </p>
+                </section>
+
+                <section>
+                <section>
+                  <h2>Typescript</h2>
+
+                  <ul>
+                    <li class="fragment">Why?</li>
+                    <li class="fragment">Typescript in React</li>
+                  </ul>
+                  <pre class="fragment"><code data-trim contenteditable>
+npm i -D @types/react
+                  </code></pre>
+                </section>
+                <section>
+                  <h3>Component Props</h3>
+                  <pre><code data-trim contenteditable>
+import React from 'react';
+.....
+interface Props {
+  active: boolean;
+  children: never;
+}
+
+const MyWidget = (props: Props) => <></>
+// or
+class MyWidget extends React.Component< Props> {
+  ...
+}
+                  </code></pre>
+                </section>
+                <section>
+                  <h3>Events</h3>
+                  <pre><code data-trim contenteditable>
+import React, { MouseEvent } from 'react';
+.....
+const MyWidget = () => {
+  const handleClick = (e: MouseEvent) => {
+    e.preventDefault();
+  }
+
+  return (
+  <button type="button" onClick={handleClick}>
+    Click me!
+  </button>
+
+  )
+
+}
+                  </code></pre>
+                </section>
+                </section>
+
+                <section>
+                  <h2>Tutorial</h2>
+
+                  <aside class="notes">
+                    create store and reducer
+                    connect hole component to the store
+                    make "start game actions"
+                    make start game action async with thunk
+                    create click frog action
+                    write test for hole component
+                  </aside>
+
+                </section>
+
+                <section>
+                  <h2>Questions</h2>
+                </section>
+
+				<!-- Slide with Catalyst slogan -->
+				<section class="image-slide">
+					<img class="cat-slogan-image" src="css/theme/images/freedom-to-innovate.svg" alt="freedom to innovate">
+				</section>
+            </div>
+
+            <div class="footer">
+                <div class="scarf">
+                    <div class="scarf-orange"></div>
+                    <div class="scarf-yellow"></div>
+                    <div class="scarf-blue"></div>
+                    <div class="scarf-green"></div>
+                </div>
+                <div class="footer-inner">
+                    <div class="catalyst-logo-footer">Catalyst</div>
+                    <!-- NOTE: use only one of these. open-source-technologists is the standard -->
+                    <div class="open-source-technologists">open source technologists</div>
+                    <!-- <div class="freedom-to-innovate">freedom to innovate</div> -->
+                </div>
+            </div>
+        </div>
+
+        <script src="lib/js/head.min.js"></script>
+        <script src="js/reveal.js"></script>
+        <script src="js/footer.js"></script>
+        <script>
+
+            // Full list of configuration options available here:
+            // https://github.com/hakimel/reveal.js#configuration
+            Reveal.initialize({
+                controls: true,
+                progress: true,
+                history: true,
+                center: true,
+
+                theme: Reveal.getQueryHash().theme, // available themes are in /css/theme
+                transition: Reveal.getQueryHash().transition || 'none', // default/cube/page/concave/zoom/linear/fade/none
+
+                // Parallax scrolling
+                // parallaxBackgroundImage: 'https://s3.amazonaws.com/hakim-static/reveal-js/reveal-parallax-1.jpg',
+                // parallaxBackgroundSize: '2100px 900px',
+
+                // Optional libraries used to extend on reveal.js
+                dependencies: [
+                    { src: 'lib/js/classList.js', condition: function() { return !document.body.classList; } },
+                    { src: 'plugin/markdown/marked.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+                    { src: 'plugin/markdown/markdown.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+                    { src: 'plugin/highlight/highlight.js', async: true, callback: function() { hljs.initHighlightingOnLoad(); } },
+                    { src: 'plugin/zoom-js/zoom.js', async: true, condition: function() { return !!document.body.classList; } },
+                    { src: 'plugin/notes/notes.js', async: true, condition: function() { return !!document.body.classList; } }
+                ]
+            });
+
+        </script>
+
+    </body>
+</html>
