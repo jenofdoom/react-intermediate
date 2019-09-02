@@ -19,6 +19,7 @@
         "sourceType": "module"
     },
     "rules": {
+        "react/prop-types": 1,
         "indent": [
             "warn",
             2
