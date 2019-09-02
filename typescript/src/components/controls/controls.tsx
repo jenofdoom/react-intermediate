@@ -12,7 +12,7 @@ interface State {
   gameStartClass: string;
   gameOverClass: string;
   gameInProgressClass: string;
-  gameTimer: null | number;
+  gameTimer: any;
 }
 class Controls extends Component<Props, State> {
   constructor (props) {

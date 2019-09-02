@@ -8,7 +8,7 @@ import Controls from 'components/controls/controls';
 import './homepage.scss';
 
 interface Props {
-  holes: any;
+  holeState: any;
 }
 class Homepage extends Component<Props> {
   render () {
@@ -40,10 +40,6 @@ class Homepage extends Component<Props> {
     );
   }
 }
-
-Homepage.propTypes = {
-  holeState: PropTypes.array.isRequired
-};
 
 const mapStateToProps = (state) => {
   const { game } = state;

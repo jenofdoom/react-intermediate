@@ -5,7 +5,7 @@ const HtmlWebpackPlugin = require('html-webpack-plugin');
 const ExtractTextPlugin = require('extract-text-webpack-plugin');
 
 const config = {
-  entry: ['@babel/polyfill', 'whatwg-fetch', './src/index.jsx'],
+  entry: ['@babel/polyfill', 'whatwg-fetch', './src/index.tsx'],
 
   output: {
     path: path.resolve(__dirname, 'dist'),
@@ -23,14 +23,17 @@ const config = {
     rules: [
       {
         enforce: 'pre', // lint files before they are transformed, config in .eslintrc.json
-        test: /\.(js|tsx)$/,
+        test: /\.(ts|tsx)$/,
         exclude: /node_modules/,
         loader: 'eslint-loader',
       },
       {
-        test: /\.(js|tsx)$/,
+        test: /\.(ts|tsx)$/,
         exclude: /node_modules/,
-        loader: 'ts-loader' // config in .babelrc
+        use: {
+          loader: 'ts-loader', // config in .babelrc
+          options: { transpileOnly: true },
+        }
       },
       {
         test: /\.scss$/,
@@ -74,7 +77,7 @@ const config = {
   ],
 
   resolve: {
-    extensions: ['.js', '.jsx', '.tsx', '.json', '.scss', '.svg'],
+    extensions: ['.js', '.jsx', '.tsx', '.ts', '.json', '.scss', '.svg'],
     modules: [path.resolve(__dirname, 'src'), 'node_modules']
   }
 };
