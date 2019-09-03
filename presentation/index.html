@@ -157,8 +157,8 @@ function logProps(WrappedComponent) {
 }
                   </code></pre>
                   <aside class="notes">
-                    withRouter()
-                    connect()()
+                    withRouter(MyComponent)
+                    connect(mapStateToProps, mapDispatchToProps)(MyComponent)
                   </aside>
 
                 </section>
@@ -186,6 +186,133 @@ function logProps(WrappedComponent) {
                 </section>
 
                 <section>
+                <section>
+                  <h2>State management</h2>
+
+                  <ul>
+                    <li class="fragment">Why?</li>
+                  </ul>
+
+                </section>
+                <section>
+                  <h3>Redux vs Mobx vs Context API</h3>
+                </section>
+                <section>
+                  <h3>Redux Architecture</h3>
+                </section>
+
+                <section>
+                  <h3>How</h3>
+                  <pre>
+              <code data-trim contenteditable>
+// create reducers
+....
+import { combineReducers } from 'redux';
+
+const reducer = (state = {}, action) => {
+  switch (action.type) {
+  case ADD_TODO:
+    return Object.assign({}, state, {
+      todos: [...state.todos, action.payload]
+    });
+  default:
+    return state;
+  }
+};
+              </code>
+            </pre>
+                </section>
+                <section>
+                  <h3>How</h3>
+                  <pre>
+              <code data-trim contenteditable>
+// create store
+import { createStore } from 'redux';
+
+import reducers from './reducers/reducers';
+
+export default function configureStore() {
+  return createStore(reducers);
+}
+              </code>
+            </pre>
+                </section>
+                <section>
+                  <h3>How</h3>
+                  <pre>
+              <code data-trim contenteditable>
+// create actions
+const ADD_TODO = 'ADD_TODO';
+
+// action creators
+const addTodo = (todo) => {
+  return {
+    type: ADD_TODO,
+    payload: todo
+  };
+};
+              </code>
+            </pre>
+                </section>
+                <section>
+                  <h3>How</h3>
+                  <pre>
+              <code data-trim contenteditable>
+// wrap application with Provider component
+import { Provider } from 'react-redux';
+import configureStore from './store';
+...
+const store = configureStore();
+
+....
+class App extends React.Component {
+  render() {
+    return (
+      <Provider store={store}>
+        <App /> ....
+      </Provider>
+    )
+  }
+}
+              </code>
+            </pre>
+                </section>
+                <section>
+                  <h3>How</h3>
+                  <pre>
+              <code data-trim contenteditable>
+// connect components to the store
+import { connect } from 'react-redux';
+...
+const mapStateToProps = (reduxState) => {
+  return {
+    todos: reduxState.todos
+  }
+}
+...
+export default connect(mapStateToProps)(TodoList)
+              </code>
+            </pre>
+                </section>
+                <section>
+                  <h3>How</h3>
+                  <pre>
+              <code data-trim contenteditable>
+// dispatch actions from connected component
+this.props.dispatch(addTodo(task));
+              </code>
+            </pre>
+                </section>
+                </section>
+
+                <section>
+                <section>
+                  <h3>Code structure<h3>
+                  <p class="fragment">
+                    <a href="https://redux.js.org/faq/code-structure">https://redux.js.org/faq/code-structure</a>
+                  </p>
+                </section>
+                <section>
                     <h3>Smart & Dumb Components</h3>
 
                     <ul>
@@ -202,28 +329,8 @@ function logProps(WrappedComponent) {
                   </aside>
 
                 </section>
-                <section>
-                <section>
-                  <h2>State management</h2>
+              </section>
 
-                  <ul>
-                    <li class="fragment">Why?</li>
-                    <li class="fragment">Redux vs Mobx vs Context API</li>
-                  </ul>
-
-                </section>
-
-                <section>
-                  <h3>Redux Architecture</h3>
-                </section>
-                </section>
-
-                <section>
-                  <h3>Code structure<h3>
-                  <p class="fragment">
-                    <a href="https://redux.js.org/faq/code-structure">https://redux.js.org/faq/code-structure</a>
-                  </p>
-                </section>
 
 
                 <section>
@@ -244,12 +351,43 @@ function logProps(WrappedComponent) {
 
                   <ul>
                     <li class="fragment">Why?</li>
-                    <li class="fragment">Typescript in React</li>
                   </ul>
+                </section>
+
+                <section>
+                  Types
+                  <pre>
+                    <code data-trim contenteditable>
+      let isDone: boolean = false; // boolean
+      let name: string = 'React'; // string
+      let score: number = 101; // number
+      let contacts: string[] = []; // array
+      let doAction: (action: string) => boolean; // functions
+
+      // More .....
+                    </code>
+                  </pre>
+                  <p>
+                    More information: <br />
+                    <small>
+                      <a href="https://www.typescriptlang.org/docs/handbook/basic-types.html">https://www.typescriptlang.org/docs/handbook/basic-types.html</a>
+                    </small>
+                  </p>
+                </section>
+
+                <section>
+                  <h3>3rd party library type definitions</h3>
                   <pre class="fragment"><code data-trim contenteditable>
 npm i -D @types/react
+         @types/react-dom
+         @types/react-redux
+         @types/react-router-dom
                   </code></pre>
                 </section>
+                <section>
+                  <h3>Typescript in React</h3>
+                </section>
+
                 <section>
                   <h3>Component Props</h3>
                   <pre><code data-trim contenteditable>
