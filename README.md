@@ -53,7 +53,7 @@ to the 'About' page, the state is lost.
 
 Note that there are a _lot_ of different ways of structuring and implementing
 redux applications. The [official
-documentation](http://redux.js.org/docs/introduction/Examples.html) offers a
+documentation](https://redux.js.org/introduction/examples) offers a
 bunch of different examples with [source
 code](https://github.com/reactjs/redux/tree/master/examples). The `async` and
 `shopping-cart` examples are the closest to what we'll build today.
@@ -61,12 +61,37 @@ code](https://github.com/reactjs/redux/tree/master/examples). The `async` and
 In a terminal in the tutorial folder:
 
 ```
-npm install --save-dev redux redux-thunk redux-logger react-redux
+npm install --save-dev redux react-redux redux-thunk redux-logger
+```
+
+### Configure the state store
+
+Create a new file in the `tutorial/src` folder called `store.js`:
+
+```
+import { createStore, applyMiddleware } from 'redux';
+import { createLogger } from 'redux-logger';
+import thunk from 'redux-thunk';
+
+import reducers from 'reducers/reducers';
+
+export default function configureStore() {
+  const middleware = [thunk];
+
+  if (process.env.NODE_ENV !== 'production') {
+    middleware.push(createLogger());
+  }
+
+  return createStore(
+    reducers,
+    applyMiddleware(...middleware)
+  );
+}
 ```
 
 ### Wrap the application in a state provider
 
-In `src/index.jsx`, add the Provider and store imports, and wrap the `Router` in
+In `src/app.jsx`, add the Provider and store imports, and wrap the `Router` in
 a `Provider` (in the example below, a `+` indicates a line you should add to the
 existing file):
 
@@ -98,31 +123,6 @@ existing file):
   );
 ```
 
-### Configure the state store
-
-Create a new file in the `tutorial/src` folder called `store.js`:
-
-```
-import { createStore, applyMiddleware } from 'redux';
-import { createLogger } from 'redux-logger';
-import thunk from 'redux-thunk';
-
-import reducers from 'reducers/reducers';
-
-export default function configureStore() {
-  const middleware = [ thunk ];
-
-  if (process.env.NODE_ENV !== 'production') {
-    middleware.push(createLogger());
-  }
-
-  return createStore(
-    reducers,
-    applyMiddleware(...middleware)
-  );
-}
-```
-
 We're still importing things that don't yet exist, we'd better fix that:
 
 ### Boilerplate for our reducers
@@ -137,8 +137,8 @@ const initialGameState = {};
 
 const game = (state = initialGameState, action) => {
   switch (action.type) {
-  default:
-    return state;
+    default:
+      return state;
   }
 };
 
@@ -186,7 +186,7 @@ const mapStateToProps = (state) => {
   const { holeState } = game;
 
   return { holeState };
-}
+};
 
 export default connect(mapStateToProps)(Homepage);
 ```
@@ -224,7 +224,7 @@ Don't forget to import `PropTypes` at the top of the file:
 import PropTypes from 'prop-types';
 ```
 
-In a redux application, it is __not__ necessary to connect every single
+In a redux application, it is **not** necessary to connect every single
 component up to the store. We can still use normal methods of passing props
 between components where it makes sense to.
 
@@ -262,7 +262,7 @@ we should remove:
 -       frogActive: !this.state.frogActive
 -     });
 -   }
--    
+-
     render () {
       let frogClass = 'frog';
 
@@ -360,7 +360,7 @@ export default connect(mapStateToProps)(Controls);
 ```
 
 In `reducers/reducers.js`, import the action type, add a new key value pair to
-the `initialGameState`, and add a case for the action type  - a `+` indicates a
+the `initialGameState`, and add a case for the action type - a `+` indicates a
 new line, and a `-` indicates a line we should remove:
 
 ```diff
@@ -372,15 +372,13 @@ new line, and a `-` indicates a line we should remove:
   const initialGameState = {
 -   holeState: Array(holesLength).fill(false)
 +   holeState: Array(holesLength).fill(false),
-+    isGameActive: false
++   isGameActive: false
   };
 
   const game = (state = initialState, action) => {
     switch (action.type) {
 +   case START_GAME:
-+     return Object.assign({}, state, {
-+       isGameActive: true
-+     });
++     return { ...state, isGameActive: true };
     default:
       return state;
     }
@@ -460,7 +458,7 @@ In `reducers/reducers.js` let's add our new action type:
 
 ```diff
   import { combineReducers } from 'redux';
-- import { START_GAME } from 'actions/actions';  
+- import { START_GAME } from 'actions/actions';
 + import { START_GAME, ALTER_HOLES } from 'actions/actions';
 
   export const holesLength = 5;
@@ -473,13 +471,9 @@ In `reducers/reducers.js` let's add our new action type:
   const game = (state = initialGameState, action) => {
     switch (action.type) {
     case START_GAME:
-      return Object.assign({}, state, {
-        isGameActive: true
-      });
+      return { ...state, isGameActive: true };
 +   case ALTER_HOLES:
-+     return Object.assign({}, state, {
-+       holeState: action.holeState
-+     });
++     return { ...state, holeState: action.holeState };
     default:
       return state;
     }
@@ -589,11 +583,11 @@ without losing the state.
 
 Try:
 
-* setting up a END_GAME action that resets all the frogs to down
-* refactoring the controls component so the game timer is moved to actions
-* setting up a score counter that increments on each click
-* resetting the score to 0 on START_GAME
-* making frogs disappear automatically if they aren't clicked after an interval
+- setting up a END_GAME action that resets all the frogs to down
+- refactoring the controls component so the game timer is moved to actions
+- setting up a score counter that increments on each click
+- resetting the score to 0 on START_GAME
+- making frogs disappear automatically if they aren't clicked after an interval
 
 ## Testing with Jest
 
@@ -606,8 +600,11 @@ works.
 
 ### Setting up Jest
 
-__I have done this setup for you, but I'm documenting here what things had to be
-added to make Jest run__
+**I have done this setup for you, but I'm documenting here what things had to be
+added to make Jest run**
+
+There are 2 main libraries to render JSX in test environment: Enzyme and React Testing Library.
+The example below is using enzyme, however React project recently identified RTL as a prefered library.
 
 The Jest packages and some extra utils needed installing:
 
@@ -721,12 +718,12 @@ Add a new file `example/src/components/hole/hole.test.js`:
 ```
 import React from 'react';
 import { Hole } from 'components/hole/hole';
-import { shallow } from 'enzyme';
+import { render } from '@testing-library/react';
 
 describe('initial render of Hole', () => {
   let hole = null;
 
-  beforeEach(() => {
+  test('Frog is hidden if Hole is not active', () => {
     const dispatchMock = jest.fn();
     const props = {
       dispatch: dispatchMock,
@@ -734,13 +731,8 @@ describe('initial render of Hole', () => {
       id: 1
     };
 
-    hole = shallow(
-      <Hole {...props} />
-    );
-  })
-
-  test('Frog is hidden if Hole is not active', () => {
-    expect(hole.find('.frog').hasClass('up')).toBeFalsy();
+    hole = render(<Hole {...props} />);
+    expect(hole.container.querySelector('.frog.up')).toBeFalsy();
   });
 });
 ```
@@ -816,9 +808,33 @@ are more explicit when you're trying to make reusable components.
 article](https://medium.com/@franleplant/react-higher-order-components-in-depth-cf9032ee6c3e)
 examines HOCs in some detail.
 
+## Functional Components
+
+There are two different ways you can write your components as functional or class.
+Functional components are usually simplier and hence easier to read and reuse.
+With class style components it's easier to use state and get access to some lifecycle methods.
+
+## React Hooks
+
+Hooks are a new addition in React 16.8. They let you use state and other React features
+without using class style components.
+
+## Typescript
+
+Typescript is gain a lot of popularity and a lot of projects are switching to use it.
+It helps reduce number of bugs and improve system maintanability. I would recommend
+using Typescript for projects that has to be maintained for extended period of time or
+go to production
+
+## Container and presentational components pattern
+
+Some times it makes sense to split your component onto presentational and contaidner parts.
+Container part would be responsible just for getting the data and presentational component would be responsible
+for just displaying the data. It potentially can make unit testing of application easier.
+
 ## Structuring for maintainability
 
-There are a __lot__ of different opinions on this topic and you will see
+There are a **lot** of different opinions on this topic and you will see
 projects that differ wildly. To a large extent it sort of depends on your
 project size... a very small project _could_ be just one file.
 
@@ -880,27 +896,3 @@ if (process.env.NODE_ENV !== 'production') {
   // your conditional stuff here
 }
 ```
-
-## A brief introduction to React Native
-
-[React Native](https://facebook.github.io/react-native/) is:
-
-* Using mobile native rendering APIs, not a webviews solution like Cordova
-* For both iOS and Android
-* A good developer environment - you get _much_ faster development builds compared to e.g. Cordova
-* A way of use native mobile APIs like the Camera
-
-React Native is _not_:
-
-* A magical way of making your web application into a mobile app with no effort
-* Not perfectly cross-platform 100% of the time, e.g. you need a third party component [react-native-datepicker](https://github.com/xgfe/react-native-datepicker) to abstract the date picker widget between platforms
-
-It is possible to re-use some of the application logic between a web project and
-a Native project, see [this
-article](http://jkaufman.io/react-web-native-codesharing/) for some tips. But
-you _definitely can't reuse the render methods_, and you might bump into issues
-with dependencies differing between the two, so you'd have to consider the pros
-and cons there.
-
-[NativeBase](https://nativebase.io/) can take some of the pain out of creating
-cross-platform (iOS and Android) widgets.
